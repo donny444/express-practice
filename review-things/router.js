@@ -1,5 +1,5 @@
 const express = require("express");
-let reviews = require("./reviews.json");
+let reviews = require("./reviews.js");
 const routes = express.Router();
 
 routes.get("/thing/:thing", (req, res) => {
@@ -20,16 +20,16 @@ routes.post("/review", (req, res) => {
     const stars = req.query.stars;
     const description = req.query.description;
 
-    const newReview = {"User": user, "Thing": thing, "Stars": stars, "Description": description};
+    const newReview = {"Thing": thing, "Stars": stars, "Description": description};
 
-    reviews.push(newReview);
+    reviews.user.push(newReview);
 
-    return res.status(200).json({result: [newReview]});
+    return res.status(200).json({user: newReview});
 });
 
 routes.put("/:user", (req, res) => {
     const user = req.params.user;
-    var filteredReviews = reviews.filter((review) => review.User = user);
+    var filteredReviews = reviews.filter((review) => review.User == user);
     if (filteredReviews.length > 0) {
         let user = req.query.user;
         let thing = req.query.thing;
@@ -54,7 +54,7 @@ routes.put("/:user", (req, res) => {
 
 routes.delete("/:user", (req, res) => {
     const user = req.params.user;
-    filteredReviews = reviews.filter((review) => review.User = user);
+    filteredReviews = reviews.filter((review) => review.User == user);
     return res.status(200).json({result: filteredReviews});
 });
 
