@@ -1,14 +1,34 @@
 const express = require("express");
-let reviews = require("./reviews.js");
+// const reviews = require("./reviews.js");
 const routes = express.Router();
+
+let reviews = {
+    "Poo Srang": [{
+        thing: "The Mandalorian",
+        stars: 5,
+        description: "Very good"
+    }],
+    "Phai Sang Kom": [{
+        thing: "Secret Invasion",
+        stars: 4,
+        description: "Not bad"
+    }],
+    "Joe Clay": [{
+        thing: "FAST X",
+        stars: 1,
+        description: "Terrible"
+    }]
+};
 
 routes.get("/thing/:thing", (req, res) => {
     const thing = req.params.thing;
     let filteredReviews = [];
 
-    for(let review of reviews) {
-        if (review.Thing === thing) {
-            filteredReviews.push(review);
+    for(let review in reviews) {
+        for(let i of review) {
+            if(review[i].thing === thing) {
+                filteredReviews.push(review[i]);
+            }
         }
     }
     return res.status(200).json({ result: filteredReviews});
@@ -21,10 +41,14 @@ routes.post("/review", (req, res) => {
     const description = req.query.description;
 
     const newReview = {"Thing": thing, "Stars": stars, "Description": description};
+    if(reviews[user]) {
+        reviews[user] = [];
+        reviews[user].push(newReview);
+    } else {
+        reviews[user] = [newReview]
+    }
 
-    reviews.user.push(newReview);
-
-    return res.status(200).json({user: newReview});
+    return res.status(200).json({result: newReview});
 });
 
 routes.put("/:user", (req, res) => {
