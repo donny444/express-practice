@@ -8,7 +8,7 @@ const reviews = require("./reviews.js");
 const users = require("./users.js");
 const routes = express.Router();
 
-
+//Register
 routes.post("/register", async (req, res) => {
     try {
         const { username, password } = req.query;
@@ -41,6 +41,35 @@ routes.post("/register", async (req, res) => {
         console.log(err);
     }
 })
+
+//Login
+routes.post("/login", async (req, res) => {
+    try {
+        const { username, password } = req.query;
+
+        if(!(username && password)) {
+            res.status(400).send("Please provide username and password");
+        }
+
+        const existUser = await users.filter((user) => user.username == username);
+        if (existUser = [] && (await bcrypt.compare(password, existUser.password))) {
+            const token = jwt.sign(
+                { username, password },
+                process.env.TOKEN_KEY,
+                {
+                    expiresIn: 60 * 60
+                }
+            )
+            
+            existUser.token = token;
+
+            res.status(200).send(user);
+        }
+    } catch(err) {
+        console.log(err);
+    }
+})
+
 //get matched reviews array by thing
 routes.get("/thing/:thing", (req, res) => {
     const thing = req.params.thing || req.query.thing;

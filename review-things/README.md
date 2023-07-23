@@ -1,7 +1,8 @@
 ### Details of the project
 ---
+A server about review things having authentication and authorization
 
-A router using GET, POST, PUT and DELETE HTTP methods.
+routing by using HTTP GET, POST, PUT and DELETE methods.
 
 ---
 
@@ -11,7 +12,10 @@ __Technologies__
   - JavaScript
   - JSON
 - Packages
+  - bcryptjs
+  - dotenv
   - Express
+  - jsonwebtoken
   - nodemon
 - Modules
   - Node.js
