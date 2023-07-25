@@ -6,18 +6,19 @@ const jwt = require("jsonwebtoken");
 
 const reviews = require("./reviews.js");
 const users = require("./users.js");
+const auth = require("./auth.js");
 const routes = express.Router();
 
 //Register
 routes.post("/register", async (req, res) => {
     try {
-        const { username, password } = req.query;
+        const { username, password } = req.body;
 
         if(!(username && password)) {
             res.status(400).send("Please provide username and password");
         }
         const existUser = await users.filter((user) => user.username === username);
-        if(existUser == []) {
+        if(existUser.length > 0) {
             return res.status(409).send("Username existed");
         }
 
@@ -68,6 +69,10 @@ routes.post("/login", async (req, res) => {
     } catch(err) {
         console.log(err);
     }
+})
+
+app.post("/welcome", auth, (req, res) => {
+    res.status(200).send("Welcome");
 })
 
 //get matched reviews array by thing
