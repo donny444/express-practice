@@ -52,8 +52,8 @@ routes.post("/login", async (req, res) => {
             res.status(400).send("Please provide username and password");
         }
 
-        const existUser = await users.filter((user) => user.username == username);
-        if (existUser = [] && (await bcrypt.compare(password, existUser.password))) {
+        const existUser = await users.find((user) => user.username === username);
+        if (existUser && (await bcrypt.compare(password, existUser.password))) {
             const token = jwt.sign(
                 { username, password },
                 process.env.TOKEN_KEY,
@@ -71,7 +71,7 @@ routes.post("/login", async (req, res) => {
     }
 })
 
-app.post("/welcome", auth, (req, res) => {
+routes.post("/welcome", auth, (req, res) => {
     res.status(200).send("Welcome");
 })
 
