@@ -11,11 +11,11 @@ __Technologies__
 - Languages
   - JavaScript
   - JSON
-- Packages
-  - bcryptjs
+- Dependencies
+  - bcrypt
   - dotenv
   - Express
   - jsonwebtoken
-  - nodemon
-- Modules
+  - nodemon(dev)
+- Runtime Environment
   - Node.js

@@ -1,7 +1,7 @@
 require("dotenv").config();
 
 const express = require("express");
-const bcrypt = require("bcryptjs");
+const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 const reviews = require("./reviews.js");
@@ -52,8 +52,8 @@ routes.post("/login", async (req, res) => {
             res.status(400).send("Please provide username and password");
         }
 
-        const existUser = await users.find((user) => user.username === username);
-        if (existUser && (await bcrypt.compare(password, existUser.password))) {
+        const user = await users.find((user) => user.username === username);
+        if (user && (await bcrypt.compare(password, user.password))) {
             const token = jwt.sign(
                 { username, password },
                 process.env.TOKEN_KEY,
@@ -62,7 +62,7 @@ routes.post("/login", async (req, res) => {
                 }
             )
             
-            existUser.token = token;
+            user.token = token;
 
             res.status(200).send(user);
         }
