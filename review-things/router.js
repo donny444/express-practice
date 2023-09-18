@@ -49,11 +49,15 @@ routes.post("/login", async (req, res) => {
         const { username, password } = req.query;
 
         if(!(username && password)) {
-            res.status(400).send("Please provide username and password");
+            return res.status(400).send("Please provide username and password");
         }
 
         const user = await users.find((user) => user.username === username);
-        if (user && (await bcrypt.compare(password, user.password))) {
+        if (!user) {
+            return res.status(404).send("User not found");
+        }
+        const passwordMatch = bcrypt.compare(password, user.password);
+        if (passwordMatch /*Error*/) {
             const token = jwt.sign(
                 { username, password },
                 process.env.TOKEN_KEY,
@@ -64,11 +68,13 @@ routes.post("/login", async (req, res) => {
             
             user.token = token;
 
-            res.status(200).send(user);
+            return res.status(200).send(user);
+        } else {
+            return res.status(400).send("Invalid Credentials");
         }
-        res.status(400).send("Invalid Credentials");
     } catch(err) {
-        console.log(err);
+        console.error(err);
+        return res.status(500),send("An error occurred");
     }
 })
 
