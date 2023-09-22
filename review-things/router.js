@@ -17,14 +17,14 @@ routes.post("/register", async (req, res) => {
         if(!(username && password)) {
             res.status(400).send("Please provide username and password");
         }
-        const existUser = await users.filter((user) => user.username === username);
-        if(existUser.length > 0) {
+        const existUser = await users.find((user) => user.username === username);
+        if(existUser) {
             return res.status(409).send("Username existed");
         }
 
-        encryptedPassword = await bcrypt.hash(password, 10);
+        const encryptedPassword = await bcrypt.hash(password, 10);
 
-        user = {username: username, password: password};
+        user = {username: username, password: encryptedPassword};
         users.push(user);
 
         const token = jwt.sign(
@@ -40,13 +40,14 @@ routes.post("/register", async (req, res) => {
         res.status(201).json(user);
     } catch(err) {
         console.log(err);
+        return res.status(500),send("An error occurred");
     }
 })
 
 //Login
 routes.post("/login", async (req, res) => {
     try {
-        const { username, password } = req.query;
+        const { username, password } = req.body;
 
         if(!(username && password)) {
             return res.status(400).send("Please provide username and password");
@@ -56,7 +57,7 @@ routes.post("/login", async (req, res) => {
         if (!user) {
             return res.status(404).send("User not found");
         }
-        const passwordMatch = bcrypt.compare(password, user.password);
+        const passwordMatch = await bcrypt.compare(password, user.password);
         if (passwordMatch /*Error*/) {
             const token = jwt.sign(
                 { username, password },
