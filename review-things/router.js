@@ -84,44 +84,63 @@ routes.post("/welcome", auth, (req, res) => {
 })
 
 //get matched reviews array by thing
-routes.get("/thing/:thing", (req, res) => {
-    const thing = req.params.thing || req.query.thing;
-    let filteredReviews = [];
-
-    for(let review of reviews) {
-        if(review.Thing === thing) {
-            filteredReviews.push(review);
+routes.get("/thing/:thing", async (req, res) => {
+    const thing = req.params.thing;
+    try {
+        if(!thing) {
+            return res.status(406).send("Please enter thing to find");
         }
+        let filteredReviews = reviews.filter((review) => review["Thing"] === thing);
+        return res.status(200).json(filteredReviews);
+    } catch(err) {
+        console.error(err);
     }
-    return res.status(200).json(filteredReviews);
 });
 
 //Add review object to reviews array
-routes.post("/review", (req, res) => {
-    const user = req.query.user
-    const thing = req.query.thing
-    const stars = req.query.stars
-    const description = req.query.description
-
-    const newReview = {"User": user, "Thing": thing, "Stars": stars, "Description": description};
-    reviews.push(newReview);
-    return res.status(200).json(newReview);
+routes.post("/review", async (req, res) => {
+    const user = req.body.user
+    const thing = req.body.thing
+    const stars = req.body.stars
+    const description = req.body.description
+    try {
+        if(!(user && thing && stars && description)) {
+            return res.status(406).send("All input is required");
+        }
+        if(stars > 5 || stars < 1) {
+            return res.status(406).send("Stars have to be between 1-5");
+        }
+        if(description.length > 200) {
+            return res.status(406).send("The description text is limited to 200");
+        }
+        const newReview = {"User": user, "Thing": thing, "Stars": stars, "Description": description};
+        reviews.push(newReview);
+        return res.status(200).json(newReview);
+    } catch(err) {
+        console.error(err);
+    }
 });
 
 //Change user value
-routes.put("/:olduser/:newuser", (req, res) => {
-    const olduser = req.params.olduser || req.query.olduser;
-    var filteredReviews = reviews.filter((review) => review["User"] == olduser);
-    if (filteredReviews.length > 0) {
-        const newuser = req.params.newuser || req.query.newuser
-        
-        if(newuser) {
-            for(review of filteredReviews) {
-                review["User"] = newuser;
-            }
+routes.put("/:oldUsername", async (req, res) => {
+    const oldUsername = req.params.oldUsername;
+    const newUsername = req.body.newUsername;
+    try {
+        if(!oldUsername) {
+            return res.status(406).send("Please enter old username");
         }
+        const existUser = reviews.find((review) => review["User"] == oldUsername);
+        if (!existUser) {
+            return res.status(404).send("The username doesn't exist");
+        }
+        if(!newUsername) {
+            return res.status(406).send("Please enter new username");
+        }
+        existUser["User"] = newUsername;
+        return res.status(200).json(existUser);
+    } catch(err) {
+        console.error(err);
     }
-    return res.status(200).json(filteredReviews);
 });
 
 
