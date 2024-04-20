@@ -3,7 +3,7 @@ require('dotenv').config();
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
-const users = require("./database/users.js");
+const users = require("./mockup/users.js");
 const auth = require("./middleware/auth.js");
 
 const app = express();

@@ -33,8 +33,8 @@ router.get("/:lastName", (req, res) => {
 });
 
 router.post("/",(req,res)=>{
-    users.push({"firstName":req.query.firstName,"lastName":req.query.lastName,"nickName":req.query.nickName,"birthDate":req.query.birthDate});
-    res.send("The user" + (' ')+ (req.query.nickName) + " Has been added!")
+    users.push({"firstName":req.body.firstName,"lastName":req.body.lastName,"nickName":req.body.nickName,"birthDate":req.body.birthDate});
+    res.send("The user" + (' ')+ (req.body.nickName) + " Has been added!")
 });
 
 router.put("/:lastName", (req, res) => {
